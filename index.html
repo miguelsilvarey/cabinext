@@ -555,96 +555,92 @@
     <script src="js/app.js"></script>
     
 <script>
-const form         = document.getElementById("contact-form");
-const successMsg   = document.getElementById("success-message");
-const errorMsg     = document.getElementById("error-message");
-const sendBtn      = document.getElementById("sendBtn");
-const btnSpinner   = sendBtn?.querySelector(".spinner-border");
-const formOverlay  = document.getElementById("formOverlay");
-const overlaySpin  = document.getElementById("overlaySpinner");
-const overlayOk    = document.getElementById("overlaySuccess");
-const overlayErr   = document.getElementById("overlayError");
+document.addEventListener("DOMContentLoaded", function () {
+  const form        = document.getElementById("contact-form");
+  const sendBtn     = document.getElementById("sendBtn");
+  const btnSpinner  = sendBtn?.querySelector(".spinner-border");
+  const formOverlay = document.getElementById("formOverlay");
+  const overlaySpin = document.getElementById("overlaySpinner");
+  const overlayOk   = document.getElementById("overlaySuccess");
+  const overlayErr  = document.getElementById("overlayError");
 
-// Helper: fetch con timeout
-function fetchWithTimeout(resource, options = {}) {
-  const { timeout = 15000 } = options;
-  const controller = new AbortController();
-  const id = setTimeout(() => controller.abort(), timeout);
-  return fetch(resource, { ...options, signal: controller.signal })
-    .finally(() => clearTimeout(id));
-}
-
-// Overlay states: loading | success | error
-function showOverlay(mode) {
-  formOverlay.classList.remove("d-none");
-  overlaySpin.classList.add("d-none");
-  overlayOk.classList.add("d-none");
-  overlayErr.classList.add("d-none");
-
-  if (mode === "loading") overlaySpin.classList.remove("d-none");
-  if (mode === "success") overlayOk.classList.remove("d-none");
-  if (mode === "error")   overlayErr.classList.remove("d-none");
-}
-
-function hideOverlay() {
-  formOverlay.classList.add("d-none");
-}
-
-function setBtnLoading(isLoading) {
-  if (!sendBtn) return;
-  sendBtn.disabled = isLoading;
-  if (btnSpinner) btnSpinner.classList.toggle("d-none", !isLoading);
-  const txt = sendBtn.querySelector(".btn-text");
-  if (txt) txt.textContent = isLoading ? "Sending..." : "Send Message";
-}
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  // Oculta mensajes inline (si existen)
-  if (successMsg) successMsg.style.display = "none";
-  if (errorMsg)   errorMsg.style.display   = "none";
-
-  const data = {
-  firstName: form.firstName.value,
-  lastName:  form.lastName.value,
-  email:     form.email.value,
-  message:   form.message.value,
-};
-const response = await fetchWithTimeout(form.action, {
-  method: form.method,
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(data),
-  timeout: 15000
-});
-
-    const result = await response.text();
-
-    if (result.trim() === "success") {
-      form.reset();
-      showOverlay("success");
-
-      // Cierra la modal en 2.5s y oculta overlay
-      setTimeout(() => {
-        const modalEl = document.getElementById("exampleModal");
-        if (modalEl) {
-          const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-          modal.hide();
-        }
-        hideOverlay();
-      }, 2500);
-
-    } else {
-      showOverlay("error");
-      // Oculta overlay tras 2.5s (no cierra modal)
-      setTimeout(hideOverlay, 2500);
-    }
-  } catch (err) {
-    showOverlay("error");
-    setTimeout(hideOverlay, 2500);
-  } finally {
-    setBtnLoading(false);
+  function fetchWithTimeout(resource, options = {}) {
+    const { timeout = 15000 } = options;
+    const controller = new AbortController();
+    const id = setTimeout(() => controller.abort(), timeout);
+    return fetch(resource, { ...options, signal: controller.signal })
+      .finally(() => clearTimeout(id));
   }
+
+  function showOverlay(mode) {
+    formOverlay.classList.remove("d-none");
+    formOverlay.style.display = "flex";
+    overlaySpin.classList.add("d-none");
+    overlayOk.classList.add("d-none");
+    overlayErr.classList.add("d-none");
+    if (mode === "loading") overlaySpin.classList.remove("d-none");
+    if (mode === "success") overlayOk.classList.remove("d-none");
+    if (mode === "error")   overlayErr.classList.remove("d-none");
+  }
+
+  function hideOverlay() {
+    formOverlay.classList.add("d-none");
+    formOverlay.style.display = "none";
+  }
+
+  function setBtnLoading(isLoading) {
+    if (!sendBtn) return;
+    sendBtn.disabled = isLoading;
+    if (btnSpinner) btnSpinner.classList.toggle("d-none", !isLoading);
+    const txt = sendBtn.querySelector(".btn-text");
+    if (txt) txt.textContent = isLoading ? "Sending..." : "Send Message";
+  }
+
+  form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const data = {
+      firstName: form.firstName.value,
+      lastName:  form.lastName.value,
+      email:     form.email.value,
+      message:   form.message.value,
+    };
+
+    setBtnLoading(true);
+    showOverlay("loading");
+
+    try {
+      const response = await fetchWithTimeout("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        timeout: 15000
+      });
+
+      const result = await response.text();
+
+      if (result.trim() === "success") {
+        form.reset();
+        showOverlay("success");
+        setTimeout(() => {
+          const modalEl = document.getElementById("exampleModal");
+          if (modalEl) {
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.hide();
+          }
+          hideOverlay();
+        }, 2500);
+      } else {
+        showOverlay("error");
+        setTimeout(hideOverlay, 2500);
+      }
+    } catch (err) {
+      showOverlay("error");
+      setTimeout(hideOverlay, 2500);
+    } finally {
+      setBtnLoading(false);
+    }
+  });
 });
 </script>
 
