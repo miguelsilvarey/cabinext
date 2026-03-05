@@ -1,6 +1,6 @@
-import nodemailer from 'nodemailer';
+const nodemailer = require('nodemailer');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).send('error');
 
   const { firstName, lastName, email, message } = req.body;
@@ -12,8 +12,8 @@ export default async function handler(req, res) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: process.env.miguelsilvarey@gmail.com,
-      pass: process.env.ozdb mnmo npkt dltq, // contraseña de aplicación, no tu clave normal
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_PASS,
     },
   });
 
@@ -24,7 +24,7 @@ export default async function handler(req, res) {
 
   try {
     await transporter.sendMail({
-      from: `"CABINEXT Website" <${process.env.miguelsilvarey@gmail.com}>`,
+      from: `"CABINEXT Website" <${process.env.GMAIL_USER}>`,
       to: 'cabinextllc@gmail.com',
       replyTo: `${firstName} ${lastName} <${email}>`,
       subject: `New Contact Form Submission from ${firstName} ${lastName}`,
@@ -42,4 +42,4 @@ export default async function handler(req, res) {
     console.error('Mailer error:', err);
     res.status(500).send('error');
   }
-}
+};
