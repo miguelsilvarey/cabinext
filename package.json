@@ -5,32 +5,3 @@
     "nodemailer": "^6.9.9"
   }
 }
-```
-
----
-
-## En Vercel Dashboard
-
-Ve a **Settings → Environment Variables** y agrega estas 5 variables:
-
-| Key | Value |
-|---|---|
-| `SMTP_HOST` | `c2631962.ferozo.com` |
-| `SMTP_PORT` | `465` |
-| `SMTP_USER` | `noreply@cabinext.llc` |
-| `SMTP_PASS` | `AAg*8vP9oT` |
-| `TO_EMAIL` | `cabinextllc@gmail.com` |
-| `TO_NAME` | `Ismael Méndez` |
-
----
-
-## Resumen de cambios en el repo
-```
-cabinext/
-├── api/
-│   └── contact.js     ← NUEVO (reemplaza send.php)
-├── vercel.json         ← NUEVO
-├── package.json        ← NUEVO
-├── index.html          ← MODIFICADO (action + fetch)
-├── send.php            ← ya no se usa (podés borrarlo)
-└── .env.local          ← NUEVO (solo local, no subir)
