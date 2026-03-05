@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Bloquea carpetas internas no relevantes
+Disallow: /cgi-bin/
+Disallow: /tmp/
+Disallow: /admin/
+
+# Sitemap
+Sitemap: https://www.cabinext.llc/sitemap.xml
