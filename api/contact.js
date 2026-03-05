@@ -1,9 +1,7 @@
 import nodemailer from 'nodemailer';
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).send('error');
-  }
+  if (req.method !== 'POST') return res.status(405).send('error');
 
   const { firstName, lastName, email, message } = req.body;
 
@@ -12,12 +10,10 @@ export default async function handler(req, res) {
   }
 
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT),
-    secure: true, // 465 = SSL
+    service: 'gmail',
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      user: process.env.miguelsilvarey@gmail.com,
+      pass: process.env.ozdb mnmo npkt dltq, // contraseña de aplicación, no tu clave normal
     },
   });
 
@@ -28,8 +24,8 @@ export default async function handler(req, res) {
 
   try {
     await transporter.sendMail({
-      from: `"CABINEXT Website" <${process.env.SMTP_USER}>`,
-      to: `${process.env.TO_NAME} <${process.env.TO_EMAIL}>`,
+      from: `"CABINEXT Website" <${process.env.miguelsilvarey@gmail.com}>`,
+      to: 'cabinextllc@gmail.com',
       replyTo: `${firstName} ${lastName} <${email}>`,
       subject: `New Contact Form Submission from ${firstName} ${lastName}`,
       html: `
